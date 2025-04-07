@@ -7,3 +7,7 @@ To make the whole project running, it is recommended to have at least 300 GB fre
 Download Unreal Engine 5 source code on your machine: https://dev.epicgames.com/documentation/en-us/unreal-engine/downloading-source-code-in-unreal-engine
 
 The game client used by this project is orginally from this repo: https://github.com/DruidMech/DedicatedServers
+
+# Overview
+Integrate AWS Gamelift Server SDK into a template game client.
+AWS Lambda
