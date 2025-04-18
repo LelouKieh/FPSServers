@@ -5,6 +5,21 @@
 #include "DedicatedServers/DedicatedServers.h"
 #include "UI/HTTP/HTTPRequestTypes.h"
 #include "JsonObjectConverter.h"
+#include "Player/DSLocalPlayerSubsystem.h"
+
+UDSLocalPlayerSubsystem* UHTTPRequestManager::GetDSLocalPlayerSubsystem() const
+{
+	APlayerController* LocalPlayerController = GEngine->GetFirstLocalPlayerController(GetWorld());
+	if (IsValid(LocalPlayerController))
+	{
+		ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(LocalPlayerController->Player);
+		if (IsValid(LocalPlayer))
+		{
+			return LocalPlayer->GetSubsystem<UDSLocalPlayerSubsystem>();
+		}
+	}
+	return nullptr;
+}
 
 bool UHTTPRequestManager::ContainsErrors(TSharedPtr<FJsonObject> JsonObject)
 {
@@ -40,4 +55,19 @@ void UHTTPRequestManager::DumpMetaData(TSharedPtr<FJsonObject> JsonObject)
 			
 		DSMetaData.Dump();
 	}
+}
+
+FString UHTTPRequestManager::SerializeJsonContent(const TMap<FString, FString>& Params)
+{
+	TSharedPtr<FJsonObject> ContentJsonObject = MakeShareable(new FJsonObject);
+	for (const auto& Param : Params)
+	{
+		ContentJsonObject->SetStringField(Param.Key, Param.Value);
+	}
+
+	FString Content;
+	TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&Content);
+	FJsonSerializer::Serialize(ContentJsonObject.ToSharedRef(), JsonWriter);
+
+	return Content;
 }
